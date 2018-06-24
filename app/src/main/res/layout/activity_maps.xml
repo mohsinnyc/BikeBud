@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mapactivityRL"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+>
+
+    <RelativeLayout
+        android:layout_below="@id/resendRequestBTN"
+        android:id="@+id/seekbarRL"
+        android:background="#FFFFFF"
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:id="@+id/selectrangeTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="Select a range" />
+
+
+        <SeekBar
+            android:min="0"
+            android:max="100"
+            android:layout_centerInParent="true"
+            android:id="@+id/simpleSeekBar"
+            android:layout_width="300dp"
+            android:layout_height="40dp" />
+
+        <TextView
+            android:id="@+id/rangeTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/simpleSeekBar"
+            android:layout_centerHorizontal="true"
+            android:text="1 mile(s)"
+            android:textStyle="bold" />
+
+
+
+    </RelativeLayout>
+
+
+
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:layout_below="@+id/seekbarRL"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/map"
+    android:name="com.google.android.gms.maps.SupportMapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MapsActivity" />
+
+    <Button
+        android:background="#aa8cc5"
+        android:textColor="#ffffff"
+        android:text="Resend Request"
+        android:id="@+id/resendRequestBTN"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+</RelativeLayout>
