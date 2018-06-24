@@ -34,10 +34,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -84,6 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             //Function to handle no internet or if the server is unable to return a value
+            //Prompts the user to resend the request to the server
             public void parseCitiBikeError() {
                 AlertDialog.Builder builder;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -101,6 +104,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 } catch (ExecutionException e) {
                                     e.printStackTrace();
                                 } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } catch (TimeoutException e) {
                                     e.printStackTrace();
                                 }
 
@@ -131,6 +136,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
             e.printStackTrace();
         }
 
@@ -165,6 +172,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (TimeoutException e) {
                     e.printStackTrace();
                 }
             }
@@ -253,27 +262,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             markerOptions = new MarkerOptions();
             safety = safetyArrayList.get(i);
-            date = new java.util.Date(safety.getDate()*1000L);
-            sdf = new java.text.SimpleDateFormat("MM-dd-yyyy \nh:mm a");
-            sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC-4"));
-            formattedDate = sdf.format(date);
-            currLatLong = new LatLng(safety.getLatitude(),safety.getLongitude());
-            markerOptions.position(currLatLong);
-            markerOptions.title("Occurrence: " + safety.getType());
-            markerOptions.snippet("\nDate/Time: " + formattedDate);
-            if(safety.getType().contains("theft") || safety.getType().contains("Theft") ) markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.robbery));
-            else if(safety.getType().contains("hazard") || safety.getType().contains("Hazard") ) markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.hazard));
-            else if(safety.getType().contains("accident") || safety.getType().contains("Accident") ) markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.accident));
-            else if(safety.getType().contains("unconfirmed") || safety.getType().contains("Unconfirmed")) markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.unknown));
             endPoint=new Location("locationA");
             endPoint.setLatitude(safety.getLatitude());
             endPoint.setLongitude(safety.getLongitude());
             distanceinmeters = startPoint.distanceTo(endPoint);
             miles = distanceinmeters * 0.00062137;
-
             Log.d(TAG,"safety miles is = " + miles);
             if(miles < range)
             {
+                date = new java.util.Date(safety.getDate()*1000L);
+                sdf = new java.text.SimpleDateFormat("MM-dd-yyyy \nh:mm a");
+                sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC-4"));
+                formattedDate = sdf.format(date);
+                currLatLong = new LatLng(safety.getLatitude(),safety.getLongitude());
+                markerOptions.position(currLatLong);
+                markerOptions.title("Occurrence: " + safety.getType());
+                markerOptions.snippet("\nDate/Time: " + formattedDate);
+                if(safety.getType().contains("theft") || safety.getType().contains("Theft") ) markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.robbery));
+                else if(safety.getType().contains("hazard") || safety.getType().contains("Hazard") ) markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.hazard));
+                else if(safety.getType().contains("accident") || safety.getType().contains("Accident") ) markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.accident));
+                else if(safety.getType().contains("unconfirmed") || safety.getType().contains("Unconfirmed")) markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.unknown));
                 mMap.addMarker(markerOptions).showInfoWindow();
             }
 
@@ -299,23 +307,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(nycLatLong,14));
         for(int i = 0; i < citiBikeArrayList.size(); i++)
         {
-
-            markerOptions = new MarkerOptions();
             citiBike = citiBikeArrayList.get(i);
-            currLatLong = new LatLng(citiBike.getLatitude(),citiBike.getLongitude());
-            markerOptions.position(currLatLong);
-            markerOptions.title(citiBike.getName());
-            markerOptions.snippet("\nFree Slots: " + citiBike.getEmptySlots() + "\nBikes Available: " + citiBike.getFreeBikes());
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.bikeicon));
             endPoint=new Location("locationA");
             endPoint.setLatitude(citiBike.getLatitude());
             endPoint.setLongitude(citiBike.getLongitude());
             distanceinmeters = startPoint.distanceTo(endPoint);
             miles = distanceinmeters * 0.00062137;
-
-
             if(miles < range)
             {
+                markerOptions = new MarkerOptions();
+                currLatLong = new LatLng(citiBike.getLatitude(),citiBike.getLongitude());
+                markerOptions.position(currLatLong);
+                markerOptions.title(citiBike.getName());
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.bikeicon));
+                markerOptions.snippet("\nFree Slots: " + citiBike.getEmptySlots() + "\nBikes Available: " + citiBike.getFreeBikes() + "\nDistance from you: " + new DecimalFormat("##.##").format(miles) + " mile(s)");
                 Log.d(TAG,"miles is = " + miles);
                 mMap.addMarker(markerOptions).showInfoWindow();
             }

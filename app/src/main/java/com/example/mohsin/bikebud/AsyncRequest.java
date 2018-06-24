@@ -14,6 +14,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  AsyncRequest is responsible for making network calls to the API and passing the JSON results to the MapsActivity to parse
@@ -35,7 +37,7 @@ public class AsyncRequest {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public JSONObject getCitiBikeResponse() throws ExecutionException, InterruptedException {
+    public JSONObject getCitiBikeResponse() throws ExecutionException, InterruptedException, TimeoutException {
         String serverURL = "https://api.citybik.es/v2/networks";
         webb.setBaseUri(serverURL);
         new AsyncTask< Void, Void, JSONObject >()
@@ -79,7 +81,7 @@ public class AsyncRequest {
                     }
                 }
             }
-        }.execute();
+        }.execute().get(30000, TimeUnit.MILLISECONDS);;
         return null;
     }
 
